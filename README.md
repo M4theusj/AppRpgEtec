@@ -1,8 +1,7 @@
 # AppRpgEtec
 Repositório criado para o crud do RpgApi.
 
-Matheus Jacob Duarte
-Vitor da Luz
+Matheus Jacob Duarte e Vitor da Luz
 
 Listagem de Personagens:
 
