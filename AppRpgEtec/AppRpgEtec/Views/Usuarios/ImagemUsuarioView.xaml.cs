@@ -1,9 +1,11 @@
 using AppRpgEtec.ViewModels.Usuarios;
 
 namespace AppRpgEtec.Views.Usuarios;
+
 public partial class ImagemUsuarioView : ContentPage
 {
 	ImagemUsuarioViewModel viewModel;
+
 	public ImagemUsuarioView()
 	{
 		InitializeComponent();
@@ -12,6 +14,4 @@ public partial class ImagemUsuarioView : ContentPage
 		Title = "Imagem do Usuário";
 		BindingContext = viewModel;
 	}
-
-
 }

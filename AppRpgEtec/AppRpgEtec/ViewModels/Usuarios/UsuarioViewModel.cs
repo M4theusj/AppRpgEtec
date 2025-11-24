@@ -16,6 +16,7 @@ namespace AppRpgEtec.ViewModels.Usuarios
         public ICommand AutenticarCommand { get; set; }
         public ICommand RegistrarCommand { get; set; }
         public ICommand DirecionarCadastroCommand { get; set; }
+
         public UsuarioViewModel()
         {
             _uService = new UsuarioService();
@@ -55,9 +56,21 @@ namespace AppRpgEtec.ViewModels.Usuarios
         #endregion
 
         #region Metodos
-               
-        private CancellationTokenSource _cancellationTokenSource;
+
+        private CancellationTokenSource _cancelTokenSource;
         private bool _isCheckingLocation;
+
+        _cancelTokenSource = new CancellationTokenSource(); 
+        _isCheckingLocation = true;
+        GeolocationRequest request = new Geolocation Request(GeolocationAccuracy.Medium, TimeSpan.FromSeconds (10));|
+        
+            Location location = await Geolocation.Default.GetLocationAsync(request, cancelTokenSource.Token);
+            Usuario uLoc = new Usuario();
+            uLoc.Id = uAutenticado.Id;
+            uLoc.Latitude = location.Latitude;
+            uLoc.Longitude = location.Longitude;
+        UsuarioService uServiceLoc = new UsuarioService(uAutenticado.Token); 
+        await uServiceLoc.PutAtualizarLocalizacaoAsync(uLoc);
 
         public async Task AutenticarUsuario()
         {
@@ -77,25 +90,10 @@ namespace AppRpgEtec.ViewModels.Usuarios
                     Preferences.Set("UsuarioUsername", uAutenticado.Username);
                     Preferences.Set("UsuarioPerfil", uAutenticado.Perfil);
 
-                    _isCheckingLocation = true;
-                    _cancellationTokenSource =new CancellationTokenSource();
-                    GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
-
-                    Location location = await Geolocation.Default.GetLocationAsync(request, _cancellationTokenSource.Token);
-
-                    Usuario uLoc = new Usuario();
-                    uLoc.Id = uAutenticado.Id;
-                    uLoc.Latitude = location.Latitude;
-                    uLoc.Longitude = location.Longitude;
-
-                    UsuarioService uServiceLoc = new UsuarioService(uAutenticado.Token);
-                    await uServiceLoc.PutAtualizarLocalizacaoAsync(uLoc);
-
                     await Application.Current.MainPage
                         .DisplayAlert("Informação", mensagem, "Ok");
 
                     Application.Current.MainPage = new AppShell();
-
                 }
                 else
                 {

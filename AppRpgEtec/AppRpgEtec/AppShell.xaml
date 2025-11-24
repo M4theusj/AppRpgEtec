@@ -3,33 +3,37 @@
     x:Class="AppRpgEtec.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:AppRpgEtec.Views"
-    xmlns:viewsPersonagens="clr-namespace:AppRpgEtec.Views.Personagens"
+    xmlns:local="clr-namespace:AppRpgEtec"
+    xmlns:conv="clr-namespace:AppRpgEtec.Converters"
     xmlns:viewsUsuarios="clr-namespace:AppRpgEtec.Views.Usuarios"
-    xmlns:viewsDisputas="clr-namespace:AppRpgEtec.Views.Disputas"
-    xmlns:conv ="clr-namespace:AppRpgEtec.Converters"
+    xmlns:viewsPersonagens="clr-namespace:AppRpgEtec.Views.Personagens"
+    xmlns:viewsDisputas ="clr-namespace:AppRpgEtec.Views.Disputas"
+    xmlns:viewAbout ="clr-namespace:AppRpgEtec.Views"
+    FlyoutBehavior="Disabled"
     Title="AppRpgEtec">
+
     <Shell.Resources>
         <ResourceDictionary>
-            <conv:ByteArrayToImageSourceConverter x:Key="ByteArrayToImage"/>
+            <conv:ByteArrayTolmageSourceConverter x:Key="ByteArrayToImage"/>
         </ResourceDictionary>
     </Shell.Resources>
+
     <Shell.FlyoutHeaderTemplate>
         <DataTemplate>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="{OnPlatform Android=130, iOS=200}"></RowDefinition>
+                    <RowDefinition Height="{OnPlatform Android = 130}"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                     <RowDefinition Height="40"></RowDefinition>
                 </Grid.RowDefinitions>
-                <FlexLayout Grid.Row="0" Direction="Row" AlignItems="Center" >
+                <FlexLayout Grid.Row="0" Direction="Row" AlignItems="Center">
                     <Frame Padding="0" CornerRadius="40"
-                            HeightRequest="80" WidthRequest="80" >
-                        <Image Source="{Binding Foto, Converter={StaticResource ByteArrayToImage}}"/>
+                         HeightRequest="80" WidthRequest="80"
+                        <Image Source="{Binding Foto, Converter={StaticResource ByteArrayToImage}}"></Image>
                     </Frame>
                     <VerticalStackLayout Padding="10,0,0,0" Spacing="0">
-                        <Label Text="App RPG Etec" FontAttributes="Bold" FontSize="Medium" />
-                        <Label Text="Disciplina PAM-II"/>
+                        <Label Text="App RPG Etec" FontAttributes="Bold" FontSize="Medium"/>
+                        <Label Text="Disciplinha PAM-II"></Label>
                     </VerticalStackLayout>
                 </FlexLayout>
             </Grid>
@@ -38,37 +42,42 @@
 
     <FlyoutItem FlyoutDisplayOptions="AsMultipleItems">
 
-                <ShellContent
-                    Title="Home" Icon="home.png"
-                    ContentTemplate="{DataTemplate viewsPersonagens:ListagemView}"
-                    Route="MainPage" />
+        <ShellContent
+        Title="Home"
+        Icon = "home.svg"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage"/>
 
+        <ShellContent Title="Usuário" Route="usuario"
+                      ContentTemplate="{DataTemplate viewsUsuarios:ImagemUsuarioView}"/>
 
-                <ShellContent
-                    Title="Usuários" Icon="menuusuarios.png"
-                    ContentTemplate="{DataTemplate viewsUsuarios:LocalizacaoView}" />
+        <ShellContent
+        Title="Usuários"
+        Icon = "menuusuarios.svg"
+        ContentTemplate="{DataTemplate viewsUsuarios:LocalizacaoView}"/>
 
-                <ShellContent
-                    Title="Personagens" Icon="menupersonagens.png"
-                    ContentTemplate="{DataTemplate viewsPersonagens:ListagemView}" />
+        <ShellContent
+        Title="Personagens"
+        Icon = "menupersonagens.svg"
+        ContentTemplate="{DataTemplate viewsPersonagens:ListagemView}"/>
 
-                <ShellContent
-                    Title="Disputas" Icon="menudisputas.png"
-                    ContentTemplate="{DataTemplate viewsDisputas:ListagemView}" />
+        <ShellContent
+        Title="Disputas"
+        Icon = "menudisputas.svg"
+        ContentTemplate="{DataTemplate viewsDisputas:ListagemView}"/>
 
-        <Tab Title="Info" Route="info" Icon="info.png">
-            <ShellContent Title="Usuario" Route="usuario" ContentTemplate="{DataTemplate viewsUsuarios:ImagemUsuarioView}"/>
-            <ShellContent Title="Sobre" Route="sobre" ContentTemplate="{DataTemplate local:AboutView}"/>
-            <ShellContent Title="Descrição" Route="desc" ContentTemplate="{DataTemplate local:DescriptionView}"/>
-        </Tab>
     </FlyoutItem>
+
+    <Tab Title="Info" Route="info" Icon="info.svg">
+        <ShellContent Title="Sobre" Route="sobre" ContentTemplate="{DataTemplate viewAbout:AboutView}"/>
+        <ShellContent Title="Descrição" Route="desc" ContentTemplate="{DataTemplate viewAbout:DescriptionView}"/>
+    </Tab>
 
     <ShellContent Title="Sair" Icon="exit.png" ContentTemplate="{DataTemplate viewsUsuarios:LoginView}"
                   Shell.FlyoutBehavior="Disabled"/>
 
     <Shell.FlyoutFooter>
-        <Label x:Name="lblLogin" TextColor="Black" FontAttributes="Bold" HorizontalOptions="Center"></Label>
+        <Label x:Name="lblLogin" TextColor="Black" FontAttributes="Bold" HorizontalOptions="Center" />
     </Shell.FlyoutFooter>
-
 
 </Shell>

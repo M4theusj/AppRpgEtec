@@ -12,15 +12,11 @@ namespace AppRpgEtec.ViewModels.Usuarios
 {
     public class ImagemUsuarioViewModel : BaseViewModel
     {
-
         private UsuarioService uService;
-        private static string conexaoAzureStorage = "segredo";
-        private static string container = "segredo";
+        private static string conexaoAzureStorage = "";
+        private static string container = "arquivos";
 
         private ImageSource fonteImagem;
-
-        private byte[] foto;
-
         public ImageSource FonteImagem
         {
             get { return fonteImagem; }
@@ -31,9 +27,10 @@ namespace AppRpgEtec.ViewModels.Usuarios
             }
         }
 
+        private byte[] foto;
         public byte[] Foto
         {
-            get => foto;
+            get { return foto; }
             set
             {
                 foto = value;
@@ -41,93 +38,33 @@ namespace AppRpgEtec.ViewModels.Usuarios
             }
         }
 
-
-        public ImagemUsuarioViewModel()
-        {
-
-            string token = Preferences.Get("UsuarioToken", string.Empty);
-            uService = new UsuarioService(token);
-
-            FotografarCommand = new Command(Fotografar);
-            SalvarImagemCommand = new Command(SalvarImagemAzure);
-            AbrirGaleriaCommand = new Command(AbrirGaleria);
-            CarregarUsuarioAzure();
-        }
-
-        public ICommand FotografarCommand { get; }
-        public ICommand SalvarImagemCommand { get; }
-
-        public ICommand AbrirGaleriaCommand { get; }
-
-
         public async void Fotografar()
         {
             try
             {
-
                 if (MediaPicker.Default.IsCaptureSupported)
                 {
                     FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
 
                     if (photo != null)
                     {
-
                         using (Stream sourceStream = await photo.OpenReadAsync())
                         {
-
                             using (MemoryStream ms = new MemoryStream())
                             {
-
                                 await sourceStream.CopyToAsync(ms);
-
                                 Foto = ms.ToArray();
 
                                 FonteImagem = ImageSource.FromStream(() => new MemoryStream(ms.ToArray()));
-
-
                             }
-
                         }
-
                     }
                 }
-
             }
             catch (Exception ex)
             {
-
                 await Application.Current.MainPage
-                    .DisplayAlert("Ops", ex.Message + "Detalhes: " + ex.InnerException, "Ok");
-
-            }
-        }
-
-        public async void SalvarImagemAzure()
-        {
-            try
-            {
-                Usuario u = new Usuario();
-                u.Foto = foto;
-                u.Id = Preferences.Get("UsuarioId", 0);
-
-                string filename = $"{u.Id}.jpg";
-
-                var blobClient = new BlobClient(conexaoAzureStorage, container, filename);
-
-                if (blobClient.Exists()) blobClient.Delete();
-
-                using (var stream = new MemoryStream(u.Foto))
-                {
-                    blobClient.Upload(stream);
-                }
-                await Application.Current.MainPage.DisplayAlert("Mensagem", "Dados salvos com sucesso!", "Ok");
-                await App.Current.MainPage.Navigation.PopAsync();
-
-            }
-            catch (Exception e)
-            {
-                await Application.Current.MainPage
-                    .DisplayAlert("OPS!", e.Message + "Detalhes: " + e.InnerException, "Ok");
+                    .DisplayAlert("Ops", ex.Message + " Detalhes: " + ex.InnerException, "Ok");
             }
         }
 
@@ -141,14 +78,53 @@ namespace AppRpgEtec.ViewModels.Usuarios
 
                     if (photo != null)
                     {
-                        using (Stream sourceStream = await photo.OpenReadAsync()) ;
+                        using (Stream sourceStream = await photo.OpenReadAsync())
+                        {
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                await sourceStream.CopyToAsync(ms);
+                                Foto = ms.ToArray();
+
+                                FonteImagem = ImageSource.FromStream(() => new MemoryStream(ms.ToArray()));
+                            }
+                        }
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 await Application.Current.MainPage
-                    .DisplayAlert("OPS!", e.Message + "Detalhes: " + e.InnerException, "Ok");
+                    .DisplayAlert("Ops", ex.Message + " Detalhes: " + ex.InnerException, "Ok");
+            }
+        }
+
+        public async void SalvarImagemAzure()
+        {
+            try
+            {
+                Usuario u = new Usuario();
+                u.Foto = foto;
+                u.Id = Preferences.Get("UsuarioId", 0);
+
+                string fileName = $"{u.Id}.jpg";
+
+                var blobClient = new BlobClient(conexaoAzureStorage, container, fileName);
+
+                if (blobClient.Exists())
+                    blobClient.Delete();
+
+                using (var stream = new MemoryStream(u.Foto))
+                {
+                    blobClient.Upload(stream);
+                }
+
+                await Application.Current.MainPage.DisplayAlert("Mensagem", "Dados salvos com sucesso!", "OK!");
+                await App.Current.MainPage.Navigation.PopAsync();
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage
+                    .DisplayAlert("Ops", ex.Message + " Detalhes: " + ex.InnerException, "OK");
             }
         }
 
@@ -156,8 +132,8 @@ namespace AppRpgEtec.ViewModels.Usuarios
         {
             try
             {
-                int usuarioID = Preferences.Get("UsuarioId", 0);
-                string filename = $"{usuarioID}.jpg";
+                int usuarioId = Preferences.Get("UsuarioId", 0);
+                string filename = $"{usuarioId}.jpg";
                 var blobClient = new BlobClient(conexaoAzureStorage, container, filename);
 
                 if (blobClient.Exists())
@@ -166,19 +142,33 @@ namespace AppRpgEtec.ViewModels.Usuarios
 
                     using (MemoryStream ms = new MemoryStream())
                     {
-
                         blobClient.OpenRead().CopyTo(ms);
                         fileBytes = ms.ToArray();
-
                     }
                     Foto = fileBytes;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                await Application.Current.MainPage
-                    .DisplayAlert("Ops", e.Message + "Detalhes" + e.InnerException, "Ok");
+                await Aplication.Current.MainPage
+                    .DisplayAlert("Ops", ex.Message + " Detalhes: " + ex.InnerException, "OK");
             }
         }
+
+        public ImagemUsuarioViewModel() { 
+            string token = Preferences.Get("UsuarioToken", string.Empty);
+            uService = new UsuarioService(token);
+
+            FotografarCommand = new Command(Fotografar);
+            SalvarImagemCommand= new Command(SalvarImagem);
+            AbrirGaleriaCommand = new Command(AbrirGaleria);
+
+            CarregarUsuarioAzure();
+        }
+
+        public ICommand FotografarCommand { get; }
+        public ICommand SalvarImagemCommand { get; }
+        public ICommand AbrirGaleriaCommand { get; }
+
     }
 }

@@ -5,7 +5,7 @@
         public App()
         {
             InitializeComponent();
-            MainPage = new NavigationPage(new AppRpgEtec.Views.Usuarios.ImagemUsuarioView());
+            MainPage = new NavigationPage(new Views.Usuarios.LoginView());
         }
 
         //protected override Window CreateWindow(IActivationState? activationState)

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AppRpgEtec.Services.Usuarios;
-using Azure.Storage.Blobs;
 
 namespace AppRpgEtec.ViewModels
 {
     public class AppShellViewModel : BaseViewModel
     {
-
-        private UsuarioService usuarioService;
-        private static string conexaoAzureStorage = "CHAVE";
-        private static string container = "arquivos";
+        private UsuarioService uService;
+        public AppShellViewModel()
+        {
+            string token = Preferences.Get("UsuarioToken", string.Empty);
+            uService = new UsuarioService(token);
+            CarregarUsuarioAzure();
+        }
 
         private byte[] foto;
         public byte[] Foto
@@ -26,20 +26,13 @@ namespace AppRpgEtec.ViewModels
                 OnPropertyChanged();
             }
         }
-        public AppShellViewModel()
-        {
-            string token = Preferences.Get("UsuarioToken", string.Empty);
-            usuarioService = new UsuarioService(token);
-            CarregarUsuarioAzure();
-            
-        }
 
         public async void CarregarUsuarioAzure()
         {
             try
             {
-                int usuarioID = Preferences.Get("UsuarioId", 0);
-                string filename = $"{usuarioID}.jpg";
+                int usuarioId = Preferences.Get("UsuarioId", 0);
+                string filename = $"{usuarioId}.jpg";
                 var blobClient = new BlobClient(conexaoAzureStorage, container, filename);
 
                 if (blobClient.Exists())
@@ -48,20 +41,17 @@ namespace AppRpgEtec.ViewModels
 
                     using (MemoryStream ms = new MemoryStream())
                     {
-
                         blobClient.OpenRead().CopyTo(ms);
                         fileBytes = ms.ToArray();
-
                     }
                     Foto = fileBytes;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                await Application.Current.MainPage
-                    .DisplayAlert("Ops", e.Message + "Detalhes" + e.InnerException, "Ok");
+                await Aplication.Current.MainPage
+                    .DisplayAlert("Ops", ex.Message + " Detalhes: " + ex.InnerException, "OK");
             }
         }
-
     }
 }

@@ -28,39 +28,6 @@ namespace AppRpgEtec.Services.Usuarios
             _token = token;
         }
 
-        public async Task<Usuario> PostRegistrarUsuarioAsync(Usuario u)
-        {
-            string urlComplementar = "/Registrar";
-            u.Id = await _request.PostReturnIntAsync(_apiUrlBase + urlComplementar, u, string.Empty);
-
-            return u;
-        }
-
-        public async Task<Usuario> PostAutenticarUsuarioAsync(Usuario u)
-        {
-            string urlComplementar = "/Autenticar";
-            u = await _request.PostAsync(_apiUrlBase + urlComplementar, u, string.Empty);
-
-            return u;
-        }
-
-        public async Task<int> PutAtualizarLocalizacaoAsync(Usuario u)
-        {
-            string urlComplementar = "/AtualizarLocalizacao";
-            var result = await _request.PutAsync(_apiUrlBase + urlComplementar, u, _token);
-            return result;
-        }
-        //using System.Collections.ObjectModel
-        public async Task<ObservableCollection<Usuario>> GetUsuariosAsync()
-        {
-            string urlComplementar = string.Format("{0}", "/GetAll");
-            ObservableCollection<Models.Usuario> listaUsuarios = await
-            _request.GetAsync<ObservableCollection<Models.Usuario>>(_apiUrlBase + urlComplementar,
-            _token);
-            return listaUsuarios;
-        }
-
-
         public async Task<int> PutFotoUsuarioAsync(Usuario u)
         {
             string urlComplementar = "/AtualizarFoto";
@@ -75,6 +42,39 @@ namespace AppRpgEtec.Services.Usuarios
             _request.GetAsync<Models.Usuario>(_apiUrlBase + urlComplementar, _token);
             return usuario;
         }
+
+        public async Task<Usuario> PostRegistrarUsuarioAsync(Usuario u)
+        {
+            string urlComplementar = "/Registrar";
+            u.Id = await _request.PostReturnIntAsync(_apiUrlBase + urlComplementar, u, string.Empty);
+
+            return u;
+        }
+
+        public async Task<int> PutAtualizarLocalizacaoAsync(Usuario u)
+        {
+            string urlComplementar = "/AtualizarLocalizacao";
+            var result = await _request.PutAsync(apiUrlBase + urlComplementar, u, _token);
+            return result;
+        }
+
+        public async Task<ObservableCollection<Usuario>> GetUsuariosAsync()
+        {
+            string urlComplementar = string.Format("{0}", "/GetAll");
+            ObservableCollection<Models.Usuario> listaUsuarios = await
+            _request.GetAsync<ObservableCollection<Models.Usuario>>(apiUrlBase + urlComplementar,
+            _token);
+            return listaUsuarios;
+        }
+
+        public async Task<Usuario> PostAutenticarUsuarioAsync(Usuario u)
+        {
+            string urlComplementar = "/Autenticar";
+            u = await _request.PostAsync(_apiUrlBase + urlComplementar, u, string.Empty);
+
+            return u;
+        }      
+
 
     }
 }
